@@ -1,3 +1,11 @@
+/*
+
+So im getting an "Variable FaceRecognition may have not been initialized error. Can someone please explain why?"
+
+*/
+
+
+
 package gui;
 
 import java.io.BufferedReader;
