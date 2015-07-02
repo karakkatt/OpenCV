@@ -1,0 +1,393 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+ 
+ /*
+ 
+ So i keep getting an "imencode error". To be exact: "Cannot find symbol". (line 331). Can someone please help me?
+ 
+ */
+ 
+ 
+ 
+ 
+ 
+package gui;
+
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.nio.IntBuffer;
+//import java.nio.IntBuffer;
+import javax.imageio.ImageIO;
+import org.bytedeco.javacpp.helper.opencv_core;
+import org.bytedeco.javacpp.opencv_contrib;
+import static org.bytedeco.javacpp.opencv_contrib.*;
+//import static org.bytedeco.javacpp.opencv_contrib.createLBPHFaceRecognizer;
+//import org.bytedeco.javacpp.opencv_core;
+import static org.bytedeco.javacpp.opencv_core.CV_32SC1;
+import org.bytedeco.javacpp.opencv_core.Rect;
+import static org.bytedeco.javacpp.opencv_highgui.CV_LOAD_IMAGE_GRAYSCALE;
+import org.bytedeco.javacpp.opencv_highgui.VideoCapture;
+import static org.bytedeco.javacpp.opencv_highgui.imread;
+import org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
+import static org.bytedeco.javacpp.opencv_highgui.imread;
+//import org.opencv.core.Core;
+//import org.opencv.core.Mat;
+//import org.opencv.core.MatOfByte;
+//import org.opencv.core.MatOfRect;
+//import org.opencv.core.Point;
+//import org.opencv.core.Rect;
+//import org.opencv.core.Scalar;
+//import org.opencv.highgui.Highgui;
+//import org.opencv.highgui.VideoCapture;
+//import org.opencv.objdetect.CascadeClassifier;
+//import org.opencv.contrib.FaceRecognizer;
+/*import org.bytedeco.javacpp.opencv_highgui.*;
+import org.bytedeco.javacpp.opencv_objdetect.*;
+import org.bytedeco.javacpp.opencv_core.*;*/
+
+
+
+
+
+/**
+ *
+ * @author bala
+ */
+public class JFrmFinder extends javax.swing.JFrame {
+
+    /**
+     * Creates new form JFrmFinder
+     */
+    
+    
+    
+    private JFrmFinder.DaemonThread myThread = null;
+    int count = 0;
+    VideoCapture webSource = null;
+    //org.bytedeco.javacpp.opencv_core.Mat testImage
+    org.bytedeco.javacpp.opencv_core.Mat frame = new org.bytedeco.javacpp.opencv_core.Mat();
+    org.bytedeco.javacpp.opencv_core.Mat crpImg  =new org.bytedeco.javacpp.opencv_core.Mat();
+    
+
+    @Override
+    public Rectangle bounds() {
+        return super.bounds(); //To change body of generated methods, choose Tools | Templates.
+    }
+            
+    
+    //opencv_core.Mat crpImg1 = new opencv_core.Mat();
+   // java.util.List imgList = new java.util.Vector();
+    //java.util.List lblList = new java.util.Vector();
+    //
+   // MatOfByte mem = null; //new MatOfByte();
+    //MatOfByte mem1 = new MatOfByte();
+    CascadeClassifier faceDetector = null;//new CascadeClassifier(JFrmTrainer.class.getResource("haarcascade_frontalface_alt.xml").getPath().substring(1));
+   
+    //MatOfRect faceDetections = new MatOfRect();
+    //MatOfByte images;
+    
+    opencv_contrib.FaceRecognizer faceRecognizer = createLBPHFaceRecognizer();
+    Thread t ;
+    
+    
+    public JFrmFinder() {
+        
+        
+        initComponents();
+        jPanel3.setVisible(true);
+        
+        // Training Image Recgonizer.
+        
+       /* File root = new File("Training");
+
+        FilenameFilter imgFilter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                name = name.toLowerCase();
+                return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png");
+            }
+        };
+
+        File[] imageFiles = root.listFiles(imgFilter);
+
+        
+
+ 
+
+        org.bytedeco.javacpp.opencv_core.MatVector images = new org.bytedeco.javacpp.opencv_core.MatVector(imageFiles.length);
+
+        org.bytedeco.javacpp.opencv_core.Mat labels = new org.bytedeco.javacpp.opencv_core.Mat(imageFiles.length, 1, CV_32SC1);
+        IntBuffer labelsBuf = labels.getIntBuffer();
+
+        int counter = 0;
+
+        for (File image : imageFiles) {
+            org.bytedeco.javacpp.opencv_core.Mat img = imread(image.getAbsolutePath(), CV_LOAD_IMAGE_GRAYSCALE);
+
+            int label = Integer.parseInt(image.getName().split("\\-")[0]);
+
+            images.put(counter, img);
+
+            labelsBuf.put(counter, label);
+            
+
+            counter++;
+        }
+
+        
+        
+        faceRecognizer = createFisherFaceRecognizer();
+        
+        faceRecognizer.train(images,labels);
+        
+        //FaceRecognizer faceRecognizer = createFisherFaceRecognizer();
+        // FaceRecognizer faceRecognizer = createEigenFaceRecognizer();
+        //faceRecognizer = F();
+        
+        //faceRecognizer = createLBPHFaceRecognizer();
+        //faceRecognizer.train(images, labels);
+        
+        frame = new org.bytedeco.javacpp.opencv_core.Mat();
+    //   mem = new MatOfByte();*/
+        
+        faceDetector = new CascadeClassifier("haarcascade_frontalface_alt.xml");
+        
+        
+        webSource = new VideoCapture(0); // video capture from default cam
+        myThread = new DaemonThread(); //create object of threat class
+        t = new Thread(myThread);
+        t.setDaemon(true);
+        myThread.runnable = true;
+        t.start();     
+    }
+    
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        jPanel2 = new javax.swing.JPanel();
+        txtName = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel2.setAutoscrolls(true);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 527, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 433, Short.MAX_VALUE)
+        );
+
+        txtName.setEditable(false);
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Name");
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel3.setAutoscrolls(true);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 708, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 441, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtName)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(97, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(104, 104, 104))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(352, 352, 352)
+                    .addComponent(jLabel1)
+                    .addContainerGap(353, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(254, 254, 254)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(269, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(57, 57, 57)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(21, 21, 21)))
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        // TODO add your handling code here:
+    }                                       
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(JFrmFinder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(JFrmFinder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(JFrmFinder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(JFrmFinder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new JFrmFinder().setVisible(true);
+            }
+        }); 
+    }
+
+    
+    class DaemonThread implements Runnable {
+
+        protected volatile boolean runnable = false;
+        
+        @Override
+        public void run() {
+             
+            synchronized (this) {
+                while (runnable) {
+                    if (webSource.grab()) {
+                        try {
+                            Rect rect= new Rect();
+                            webSource.retrieve(frame);
+                            Graphics g = jPanel2.getGraphics();
+                            Graphics g2 = jPanel2.getGraphics();
+                            faceDetector.detectMultiScale(frame, rect);
+                            //System.out.println(frame.
+                            
+                            System.out.println("Testing");
+                            System.out.println("Rectangle" + rect.x());
+                            imencode(frame,".bmp");
+                            
+                            /* highgui.imencode doesnt work
+                            no imports required
+                            3rd frame of reference? */
+                            
+                            
+//                            for (rect : faceDetections.toArray()) {
+//                                System.out.println("ttt");
+//                                Core.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x() + rect.width(), rect.y() + rect.height),
+//                                        new Scalar(0, 255,0));
+//                                crpImg = frame.submat(rect.y, rect.y+rect.height, rect.x, rect.x+rect.height);
+//                                
+//                                                                
+//                            }
+//                            Highgui.imencode(".bmp",crpImg,mem1);
+//                            Highgui.imencode(".bmp", frame, mem);
+                            
+                       /*     Image im =ImageIO.read(new ByteArrayInputStream(mem.toArray()));
+                            Image im1 =ImageIO.read(new ByteArrayInputStream(mem1.toArray()));
+                            
+                            BufferedImage buff = (BufferedImage) im;
+                            BufferedImage buff1 = (BufferedImage) im1;
+                            g2.drawImage(buff1, 0, 0, jPanel2.getWidth(),jPanel2.getHeight(), null);
+                            int predictedLabel;
+                            
+                           
+                            predictedLabel= faceRecognizer.predict();
+                            
+                            
+                            txtName.setText("Id" + predictedLabel);
+                            
+                            if (g.drawImage(buff, 0, 0, getWidth(), getHeight()-150 , 0, 0, buff.getWidth(), buff.getHeight(), null)) {
+                                
+                                if (runnable == false) {
+                                    System.out.println("Paused ..... ");
+                                    this.wait();
+                                }
+                            }
+                            */
+                        } catch (Exception ex) {
+                            System.out.println("Error" +ex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    protected void finalize( ) throws Throwable
+    {
+        t.stop();
+        t = null;
+        
+        super.finalize();
+    }
+    // Variables declaration - do not modify                     
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JTextField txtName;
+    // End of variables declaration                   
+}
